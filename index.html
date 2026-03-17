@@ -2,173 +2,185 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Grisafe Collection</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --brand: #c2410c; --paper: #fdfcfb; --ink: #1c1917; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--paper); color: var(--ink); margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: #fdfcfb; color: #1c1917; }
         .serif { font-family: 'Playfair Display', serif; }
-        .glass { background: rgba(253, 252, 251, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid #e7e5e4; }
-        .page { max-width: 1200px; margin: 0 auto; padding: 20px; }
         .hidden { display: none !important; }
-        .folder-card { background: white; border: 1px solid #e7e5e4; padding: 40px; border-radius: 24px; cursor: pointer; text-align: center; }
-        input, textarea, select { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #e7e5e4; border-radius: 8px; }
+        .card { background: white; border: 1px solid #e7e5e4; padding: 2rem; border-radius: 1.5rem; cursor: pointer; transition: 0.2s; }
+        .card:hover { border-color: #c2410c; transform: translateY(-2px); }
     </style>
 </head>
-<body>
+<body class="pb-20">
 
-    <nav class="glass sticky top-0 z-50 p-4 flex justify-between items-center">
-        <div onclick="location.reload()" style="cursor:pointer">
-            <span class="serif font-bold text-2xl">The Grisafe Collection</span>
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-stone-200 p-4">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <h1 class="serif text-xl font-bold italic" onclick="location.reload()" style="cursor:pointer">The Grisafe Collection</h1>
+            <button onclick="showView('form')" class="bg-stone-900 text-white px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest">+ New Entry</button>
         </div>
-        <button onclick="openAddForm()" class="bg-stone-900 text-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest">
-            + New Entry
-        </button>
     </nav>
 
-    <div id="view-library" class="page">
-        <h2 class="serif text-5xl mb-8 mt-8">Volumes</h2>
-        <div id="category-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <p>Loading your collection...</p>
-        </div>
-    </div>
-
-    <div id="view-folder" class="page hidden">
-        <button onclick="showView('library')" class="text-xs font-bold text-stone-400 mb-4">← BACK</button>
-        <h2 id="folder-title" class="serif text-4xl mb-8 capitalize"></h2>
-        <div id="recipe-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
-    </div>
-
-    <div id="view-recipe" class="page hidden">
-        <button onclick="showView('folder')" class="text-xs font-bold text-stone-400 mb-4">← BACK</button>
-        <div class="bg-white p-8 rounded-3xl shadow-sm border border-stone-100">
-            <h2 id="r-name" class="serif text-4xl mb-4"></h2>
-            <div id="r-meta" class="text-orange-600 text-xs font-bold mb-8"></div>
-            <div class="grid md:grid-cols-2 gap-8">
-                <div><h3 class="serif font-bold border-b pb-2 mb-4">Ingredients</h3><p id="r-ingredients" style="white-space:pre-wrap"></p></div>
-                <div><h3 class="serif font-bold border-b pb-2 mb-4">Directions</h3><p id="r-directions" style="white-space:pre-wrap"></p></div>
+    <div class="max-w-5xl mx-auto px-6 py-10">
+        <div id="view-library">
+            <h2 class="serif text-5xl mb-10">Volumes</h2>
+            <div id="category-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <p class="text-stone-400">Loading collection...</p>
             </div>
-            <button id="del-btn" class="mt-8 text-red-400 text-xs uppercase font-bold">Delete Recipe</button>
         </div>
-    </div>
 
-    <div id="view-form" class="page hidden">
-        <h2 class="serif text-3xl mb-8">Add New Recipe</h2>
-        <input type="text" id="f-name" placeholder="Recipe Name">
-        <input type="text" id="f-cat" placeholder="Category (e.g. Dinner, Desserts)">
-        <textarea id="f-ing" rows="5" placeholder="Ingredients"></textarea>
-        <textarea id="f-dir" rows="5" placeholder="Directions"></textarea>
-        <button onclick="saveRecipe()" class="w-full bg-stone-900 text-white py-4 rounded-xl font-bold">SAVE TO CLOUD</button>
+        <div id="view-folder" class="hidden">
+            <button onclick="showView('library')" class="text-xs font-bold text-stone-400 mb-6 uppercase">← Back to Library</button>
+            <h2 id="folder-title" class="serif text-4xl mb-8 capitalize"></h2>
+            <div id="recipe-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+        </div>
+
+        <div id="view-recipe" class="hidden">
+            <button onclick="showView('folder')" class="text-xs font-bold text-stone-400 mb-6 uppercase">← Back to Volume</button>
+            <div class="bg-white p-8 md:p-12 rounded-[2rem] shadow-sm border border-stone-100">
+                <h2 id="r-name" class="serif text-4xl mb-6"></h2>
+                <div class="grid md:grid-cols-2 gap-10">
+                    <div>
+                        <h3 class="serif font-bold border-b pb-2 mb-4">Ingredients</h3>
+                        <p id="r-ing" class="whitespace-pre-wrap text-stone-600 leading-relaxed"></p>
+                    </div>
+                    <div>
+                        <h3 class="serif font-bold border-b pb-2 mb-4">Directions</h3>
+                        <p id="r-dir" class="whitespace-pre-wrap text-stone-700 leading-relaxed"></p>
+                    </div>
+                </div>
+                <button id="del-btn" class="mt-12 text-red-400 text-[10px] font-bold uppercase tracking-widest hover:text-red-600">Delete Recipe</button>
+            </div>
+        </div>
+
+        <div id="view-form" class="hidden">
+            <h2 class="serif text-3xl mb-8">New Recipe Entry</h2>
+            <div class="space-y-4">
+                <input type="text" id="f-name" placeholder="Recipe Name" class="w-full p-4 border rounded-xl">
+                <input type="text" id="f-cat" placeholder="Category (e.g. Italian, Desserts)" class="w-full p-4 border rounded-xl">
+                <textarea id="f-ing" rows="6" placeholder="Ingredients..." class="w-full p-4 border rounded-xl"></textarea>
+                <textarea id="f-dir" rows="6" placeholder="Directions..." class="w-full p-4 border rounded-xl"></textarea>
+                <button onclick="saveRecipe()" id="save-btn" class="w-full bg-stone-900 text-white py-5 rounded-xl font-bold uppercase tracking-widest text-sm">Save to Cloud</button>
+                <button onclick="showView('library')" class="w-full text-stone-400 text-xs font-bold py-2">Cancel</button>
+            </div>
+        </div>
     </div>
 
     <script>
-        var BIN_ID = '69b8a763b7ec241ddc7544fd'; 
-        var API_KEY = '$2a$10$wXX01DEUgEg9bg10NJO4.uYws/fNtG.OcNEUKqmg56Qwn3uuQ8t56';
-        var URL = 'https://api.jsonbin.io/v3/b/' + BIN_ID;
-        var recipes = [];
+        const BIN_ID = '69b8a763b7ec241ddc7544fd';
+        const API_KEY = '$2a$10$wXX01DEUgEg9bg10NJO4.uYws/fNtG.OcNEUKqmg56Qwn3uuQ8t56';
+        const URL = 'https://api.jsonbin.io/v3/b/' + BIN_ID;
+        
+        let recipes = [];
+        let currentRecipeId = null;
 
-        function showView(id) {
-            document.getElementById('view-library').classList.add('hidden');
-            document.getElementById('view-folder').classList.add('hidden');
-            document.getElementById('view-recipe').classList.add('hidden');
-            document.getElementById('view-form').classList.add('hidden');
-            document.getElementById('view-' + id).classList.remove('hidden');
+        function showView(viewId) {
+            ['library', 'folder', 'recipe', 'form'].forEach(v => {
+                document.getElementById('view-' + v).classList.add('hidden');
+            });
+            document.getElementById('view-' + viewId).classList.remove('hidden');
+            window.scrollTo(0,0);
         }
 
         async function loadData() {
             try {
-                var response = await fetch(URL + '/latest', {
-                    headers: { 'X-Master-Key': API_KEY }
+                const response = await fetch(URL + '/latest', {
+                    headers: { 'X-Master-Key': API_KEY, 'X-Bin-Meta': 'false' }
                 });
-                var data = await response.json();
-                recipes = data.record || [];
+                const data = await response.json();
+                recipes = Array.isArray(data) ? data : (data.record || []);
                 renderLibrary();
             } catch (e) {
-                document.getElementById('category-grid').innerHTML = '<p>Error connecting to cloud. Check your Internet.</p>';
+                document.getElementById('category-grid').innerHTML = "Connection error. Refresh the page.";
             }
         }
 
         function renderLibrary() {
-            var grid = document.getElementById('category-grid');
+            const grid = document.getElementById('category-grid');
             if (recipes.length === 0) {
-                grid.innerHTML = '<p>No recipes found. Click + New Entry to start.</p>';
+                grid.innerHTML = '<div class="col-span-full py-10 text-stone-400 italic">No recipes found. Add your first one!</div>';
                 return;
             }
-            var categories = [];
-            for (var i = 0; i < recipes.length; i++) {
-                if (categories.indexOf(recipes[i].category) === -1) {
-                    categories.push(recipes[i].category);
-                }
-            }
-            
-            var html = '';
-            for (var j = 0; j < categories.length; j++) {
-                html += '<div class="folder-card" onclick="openFolder(\''+categories[j]+'\')">' +
-                        '<h3 class="serif text-2xl capitalize">'+categories[j]+'</h3>' +
-                        '</div>';
-            }
-            grid.innerHTML = html;
+            const categories = [...new Set(recipes.map(r => r.category))].sort();
+            grid.innerHTML = categories.map(cat => `
+                <div class="card" onclick="openFolder('${cat}')">
+                    <h3 class="serif text-2xl font-bold capitalize">${cat}</h3>
+                    <p class="text-[10px] font-bold text-orange-600 uppercase mt-2">${recipes.filter(r => r.category === cat).length} Recipes</p>
+                </div>
+            `).join('');
         }
 
         function openFolder(cat) {
             showView('folder');
             document.getElementById('folder-title').innerText = cat;
-            var filtered = recipes.filter(function(r) { return r.category === cat; });
-            var html = '';
-            for (var i = 0; i < filtered.length; i++) {
-                html += '<div class="bg-white p-6 rounded-xl border border-stone-100 shadow-sm" onclick="openRecipe('+filtered[i].id+')">' +
-                        '<h4 class="serif text-xl">'+filtered[i].name+'</h4>' +
-                        '</div>';
-            }
-            document.getElementById('recipe-grid').innerHTML = html;
+            const filtered = recipes.filter(r => r.category === cat);
+            document.getElementById('recipe-grid').innerHTML = filtered.map(r => `
+                <div class="card !p-6" onclick="openRecipe(${r.id})">
+                    <h4 class="serif text-xl">${r.name}</h4>
+                </div>
+            `).join('');
         }
 
         function openRecipe(id) {
-            var r = recipes.find(function(x) { return x.id === id; });
+            const r = recipes.find(x => x.id === id);
+            currentRecipeId = id;
             showView('recipe');
             document.getElementById('r-name').innerText = r.name;
-            document.getElementById('r-ingredients').innerText = r.ingredients;
-            document.getElementById('r-directions').innerText = r.directions;
-            document.getElementById('del-btn').onclick = function() { deleteRecipe(id); };
-        }
-
-        function openAddForm() {
-            showView('form');
+            document.getElementById('r-ing').innerText = r.ingredients;
+            document.getElementById('r-dir').innerText = r.directions;
+            document.getElementById('del-btn').onclick = deleteRecipe;
         }
 
         async function saveRecipe() {
-            var newR = {
+            const btn = document.getElementById('save-btn');
+            btn.innerText = "SYNCING...";
+            btn.disabled = true;
+
+            const newRecipe = {
                 id: Date.now(),
                 name: document.getElementById('f-name').value,
                 category: document.getElementById('f-cat').value,
                 ingredients: document.getElementById('f-ing').value,
                 directions: document.getElementById('f-dir').value
             };
-            recipes.push(newR);
-            
-            await fetch(URL, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
-                body: JSON.stringify(recipes)
-            });
-            
-            location.reload();
-        }
 
-        async function deleteRecipe(id) {
-            if(confirm("Delete this recipe?")) {
-                recipes = recipes.filter(function(x) { return x.id !== id; });
+            if(!newRecipe.name || !newRecipe.category) {
+                alert("Please fill in Name and Category");
+                btn.innerText = "SAVE TO CLOUD";
+                btn.disabled = false;
+                return;
+            }
+
+            recipes.push(newRecipe);
+
+            try {
                 await fetch(URL, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
                     body: JSON.stringify(recipes)
                 });
                 location.reload();
+            } catch (e) {
+                alert("Cloud error. Recipe not saved.");
+                btn.innerText = "SAVE TO CLOUD";
+                btn.disabled = false;
             }
         }
 
+        async function deleteRecipe() {
+            if(!confirm("Delete this recipe?")) return;
+            recipes = recipes.filter(r => r.id !== currentRecipeId);
+            await fetch(URL, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+                body: JSON.stringify(recipes)
+            });
+            location.reload();
+        }
+
+        // Run on start
         loadData();
     </script>
 </body>
